@@ -9,10 +9,11 @@ define([], function () {
      */
     function setCustomBilling(context) {
         const PENDING_APPROVAL = 'A';
+        const event = context.type;
         const transaction = context.newRecord;
         const termInYears = transaction.getValue({ fieldId: 'custbody_dt_term_in_years' });
 
-        if (isInt(termInYears)) {
+        if (event !== context.UserEventType.CREATE || isInt(termInYears)) {
             return;
         }
 

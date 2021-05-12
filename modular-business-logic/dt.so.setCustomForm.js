@@ -8,8 +8,13 @@ define(['N/log', 'N/runtime'], function (log, runtime) {
      * @param context
      */
     function setCustomForm(context) {
+        const event = context.type;
         const transaction = context.newRecord;
         const script = runtime.getCurrentScript();
+
+        if (event !== context.UserEventType.CREATE) {
+            return;
+        }
 
         const customFormId = script.getParameter({
             name: 'custscript_dt_intl_customform'
