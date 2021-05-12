@@ -8,11 +8,10 @@ define(['N/log', 'N/runtime'], function (log, runtime) {
      * @param context
      */
     function setCustomForm(context) {
-        const event = context.type;
         const transaction = context.newRecord;
         const script = runtime.getCurrentScript();
 
-        if (event !== context.UserEventType.CREATE) {
+        if (!isTargetRecord(context)) {
             return;
         }
 
@@ -20,20 +19,26 @@ define(['N/log', 'N/runtime'], function (log, runtime) {
             name: 'custscript_dt_intl_customform'
         });
 
-        const internationalSubsidiaryIds = script.getParameter({
-            name: 'custscript_dt_intl_subsidiries'
-        });
-
-        const subsidiaryId = transaction.getValue({ fieldId: 'subsidiary' });
-
-        if (!internationalSubsidiaryIds.includes(subsidiaryId)) {
-            return;
-        }
-
         transaction.setValue({
             fieldId: 'customform',
             value: customFormId
         });
+    }
+
+    function isTargetRecord(context) {
+        const event = context.type;
+        const script = runtime.getCurrentScript();
+
+        const subsidiaryId = context.newRecord.getValue({
+            fieldId: 'subsidiary'
+        });
+
+        const internationalSubsidiaryIds = script.getParameter({
+            name: 'custscript_dt_intl_subsidiries'
+        });
+
+        return event !== context.UserEventType.CREATE
+            && !internationalSubsidiaryIds.includes(subsidiaryId)
     }
 
     return {
