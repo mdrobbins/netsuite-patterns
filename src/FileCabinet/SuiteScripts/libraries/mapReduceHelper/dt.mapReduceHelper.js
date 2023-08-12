@@ -1,13 +1,12 @@
 /**
  * @NApiVersion 2.1
  * @NModuleScope Public
- * @NAmdConfig /SuiteScripts/configuration/configuration.json
  */
 define([
     'N/log',
     'N/runtime',
-    'DT/timer',
-    'DT/tryCatch'
+    '../timer/dt.timer',
+    '../tryCatch/dt.tryCatch'
 ], function (log, runtime, Timer, tryCatch) {
 
     /**
