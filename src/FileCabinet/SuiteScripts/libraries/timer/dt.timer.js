@@ -1,18 +1,18 @@
 /**
- * @NApiVersion 2.0
+ * @NApiVersion 2.1
  * @NModuleScope Public
  */
 define([], function() {
     function Timer() {
-        var START_TIME = new Date();
-        var START_INTERVAL_TIME = START_TIME;
+        let START_TIME = new Date();
+        let START_INTERVAL_TIME = START_TIME;
 
         this.getStartTime = function() {
             return START_TIME;
         };
 
         this.getElapsedTime = function() {
-            var CURRENT_TIME = new Date();
+            const CURRENT_TIME = new Date();
             return CURRENT_TIME.getTime() - START_TIME.getTime();
         };
 
@@ -21,8 +21,8 @@ define([], function() {
         };
 
         this.getIntervalTime = function() {
-            var CURRENT_TIME = new Date();
-            var intervalTime = CURRENT_TIME.getTime() - START_INTERVAL_TIME.getTime();
+            const CURRENT_TIME = new Date();
+            const intervalTime = CURRENT_TIME.getTime() - START_INTERVAL_TIME.getTime();
             START_INTERVAL_TIME = intervalTime;
             return intervalTime;
         };

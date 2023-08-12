@@ -1,6 +1,5 @@
-//noinspection JSUnresolvedFunction
 /**
- *  @NAPIVersion 2.0
+ *  @NAPIVersion 2.1
  *  @NModuleScope Public
  */
 define(['N/log', 'N/error'], function (log, error) {
@@ -8,18 +7,18 @@ define(['N/log', 'N/error'], function (log, error) {
      * Wraps a potentially unsafe NetSuite call in a try/catch and implements basic logging
      * @returns {{isSuccess: boolean, result?: object, message?: string, details?: object}}
      */
-    function safeExecute() {
-        var parameters = Array.prototype.slice.call(arguments);
-        var functionToExecute = parameters.shift();
+    function tryCatch() {
+        const parameters = Array.prototype.slice.call(arguments);
+        const functionToExecute = parameters.shift();
         if (typeof(functionToExecute) === 'function') {
             try {
-                var result = functionToExecute.apply(this, parameters);
+                const result = functionToExecute.apply(this, parameters);
                 return {
                     isSuccess: true,
                     result: result
                 };
             } catch (ex) {
-                var response = {
+                const response = {
                     isSuccess: false,
                     message: ex.message,
                     details: {
@@ -40,5 +39,5 @@ define(['N/log', 'N/error'], function (log, error) {
         }
     }
 
-    return safeExecute;
+    return tryCatch;
 });

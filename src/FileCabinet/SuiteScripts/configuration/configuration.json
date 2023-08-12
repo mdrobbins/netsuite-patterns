@@ -1,0 +1,10 @@
+{
+  "baseUrl" : "/SuiteScripts/libraries",
+  "map": {
+    "DT/tryCatch": "tryCatch/dt.tryCatch.js",
+    "DT/mapReduceHelper": "mapReduceHelper/dt.mapReduceHelper.js",
+    "DT/search": "search/dt.search.js",
+    "DT/stateLabel": "stateLabel/dt.stateLabel.js",
+    "DT/timer": "timer/dt.timer.js"
+  }
+}

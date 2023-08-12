@@ -1,5 +1,5 @@
 /**
- *  @NAPIVersion 2.0
+ *  @NAPIVersion 2.1
  *  @NModuleScope Public
  */
 
@@ -17,7 +17,7 @@ define(['N/search'], function (search) {
     }
 
     function getAll(options) {
-        var searchResult = create(options).run();
+        const searchResult = create(options).run();
         return getAllResults(searchResult);
     }
 
@@ -30,7 +30,7 @@ define(['N/search'], function (search) {
     }
 
     function getAllResults(resultSet) {
-        var batch, batchResults, results = [], searchStart = 0;
+        let batch, batchResults, results = [], searchStart = 0;
         if (!resultSet.getRange) {
             resultSet = resultSet.run();
         }
@@ -48,12 +48,12 @@ define(['N/search'], function (search) {
     }
 
     return {
-        create: create,
-        lookupFields: lookupFields,
-        get: get,
-        getAll: getAll,
-        getOne: getOne,
-        hasAny: hasAny,
-        getAllResults: getAllResults
+        create,
+        lookupFields,
+        get,
+        getAll,
+        getOne,
+        hasAny,
+        getAllResults
     };
 });
