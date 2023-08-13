@@ -12,6 +12,10 @@ define(['N/search'], function (search) {
         return search.lookupFields(options);
     }
 
+    function load(options) {
+        return search.load(options);
+    }
+
     function get(options) {
         return create(options).run().getRange({ start: 0, end: 1000 });
     }
@@ -50,10 +54,12 @@ define(['N/search'], function (search) {
     return {
         create,
         lookupFields,
+        load,
         get,
         getAll,
         getOne,
         hasAny,
-        getAllResults
+        getAllResults,
+        Type: search.Type
     };
 });
