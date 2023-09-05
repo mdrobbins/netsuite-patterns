@@ -13,21 +13,31 @@ define([
      * Automatically calls JSON.parse on either the Map stage value or the elements of the Reduce stage array
      *
      * @param context
+     * @param mapper
      * @returns {*}
      */
-    function getStageData(context) {
+    function getStageData(context, mapper = null) {
         if (context.value) {
-            return JSON.parse(context.value);
+            const data = JSON.parse(context.value);
+
+            if (mapper) {
+                return mapDataProperties(mapper)(data);
+            }
         }
 
-        return context.values.map(JSON.parse);
+        const data = context.values.map(JSON.parse);
+
+        if (mapper) {
+            return data.map(mapDataProperties(mapper));
+        }
+
+        return data;
     }
 
     /**
      * Returns an object with the output and summary errors as arrays
      *
      * @param context
-     * @param includeErrors
      * @returns {{output: *[], reduceErrors: (*|*[]), inputError: (*|*[]), mapErrors: (*|*[])}}
      */
     function getSummaryData(context) {
@@ -106,6 +116,26 @@ define([
             log.error({ title: `${stage} error for key ${key}`, details: error });
             return true;
         });
+    }
+
+    /**
+     * Maps the properies of the object provided to a new name provided in the `mapper` argument.
+     *
+     * @param mapper
+     * @returns {function(*): {}}
+     */
+    function mapDataProperties(mapper) {
+        return function(data) {
+            const mappedData = {};
+
+            for (let property of Object.keys(data)) {
+                const propertyName = mapper[property] || property;
+
+                mappedData[propertyName] = data[property];
+            }
+
+            return mappedData;
+        }
     }
 
     return {
