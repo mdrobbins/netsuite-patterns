@@ -6,8 +6,7 @@ define([
     'N/log',
     'N/runtime',
     '../timer/dt.timer',
-    '../tryCatch/dt.tryCatch'
-], function (log, runtime, Timer, tryCatch) {
+], function (log, runtime, Timer) {
 
     /**
      * Automatically calls JSON.parse on either the Map stage value or the elements of the Reduce stage array
@@ -42,26 +41,14 @@ define([
      */
     function getSummaryData(context) {
         const output = [];
-        let inputError;
-        let mapErrors;
-        let reduceErrors;
 
-        context.output.iterator().each((key, value) => {
-            tryCatch(() => value = JSON.parse(value));
+        context.output.iterator().each((key, value) => !!output.push({ key, value }));
 
-            output.push({ key, value });
-            return true;
-        });
-
-        inputError = getSummaryErrors(context.inputSummary);
-        mapErrors = getSummaryErrors(context.mapSummary);
-        reduceErrors = getSummaryErrors(context.reduceSummary);
+        const errors = getErrors(context);
 
         return {
             output,
-            inputError,
-            mapErrors,
-            reduceErrors
+            ...errors
         };
     }
 
@@ -69,53 +56,36 @@ define([
      * Returns the error or errors from the provide summary as an arrary rather than an iterator
      *
      * @param summary
-     * @returns {*|*[]}
+     * @returns {{input: *[], map: *[], reduce: *[]}} errors
      */
-    function getSummaryErrors(summary) {
-        if (!summary.errors) {
-            return summary.error;
+    function getErrors(summary) {
+        let errors = {
+            input: [],
+            map: [],
+            reduce: []
+        };
+
+        if (summary.inputSummary.error) {
+            errors.input.push({ key: 0, error: summary.inputSummary.error });
         }
 
-        const errors = [];
-
-        summary.errors.iterator().each((key, error) => {
-            errors.push({ key, error });
-            return true;
-        });
+        summary.mapSummary.errors.iterator().each((key, details) => !!errors.map.push({ key, details }));
+        summary.reduceSummary.errors.iterator().each((key, details) => !!errors.reduce.push({ key, details }));
 
         return errors;
     }
 
     /**
-     * Loops through all summary error iterators and logs the key and error to the script log
-     *
-     * @param context
-     */
-    function logErrors(context) {
-        logSummaryErrors('GetInputData', context.inputSummary);
-        logSummaryErrors('Map', context.mapSummary);
-        logSummaryErrors('Reduce', context.reduceSummary);
-    }
-
-    /**
      * Logs the errors, if any, from the getInputData, map or reduce stage summaries
      *
-     * @param stage
      * @param summary
      */
-    function logSummaryErrors(stage, summary) {
-        if (!summary.errors) {
-            if (summary.error) {
-                log.error({ title: `${stage} error`, details: summary.error });
-            }
+    function logErrors(summary) {
+        const errors = getErrors(summary);
 
-            return;
-        }
-
-        summary.errors.iterator().each((key, error) => {
-            log.error({ title: `${stage} error for key ${key}`, details: error });
-            return true;
-        });
+        errors.input.forEach(details => log.error({ title: 'getInputData', details }));
+        errors.map.forEach(error => log.error({ title: `Map error, key: ${error.key}`, details: error.details }));
+        errors.reduce.forEach(error => log.error({ title: `Reduce error, key: ${error.key}`, details: error.details }));
     }
 
     /**

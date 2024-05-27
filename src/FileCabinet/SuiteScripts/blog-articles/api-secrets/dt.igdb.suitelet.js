@@ -69,7 +69,8 @@ define([
             return;
         }
 
-        let data = results.sort(byTextProperty('name'));
+        let data = formatSearchGameResults(results)
+            .sort(byTextProperty('name'));
 
         const sublist = form.getSublist({
             id: 'custpage_results'
@@ -87,6 +88,55 @@ define([
             ];
 
             columns.forEach(sublist.setSublistValue);
+        });
+    }
+
+    function formatSearchGameResults(results) {
+        return results.map(result => {
+            let releaseDate = null;
+
+            const id = result.id;
+            const first_release_date = result.first_release_date || '';
+            let name = result.name || '';
+            const summary = result.summary || '';
+            const rating = result.rating || 0;
+            const aggregated_rating = result.aggregated_rating || 0;
+            const url = result.url || '';
+            const cover_url = result.cover?.url || '';
+            const genres = result.genres || [];
+            const platforms = result.platforms || [];
+
+            const coverImageTarget = cover_url.replace('t_thumb', 't_cover_big_2x');
+
+            const coverImage = cover_url
+                ? `<a href="${coverImageTarget}" target="_blank"><img width="50" src="https:${cover_url}" alt="cover image"/></a>`
+                : `<img width="50" height="50" src="https://alt-fire.com/images/alt-fire-game-no-image.png" alt="no cover image"/>`;
+
+            if (first_release_date) {
+                const date = new Date(first_release_date * 1000);
+                const year = date.getFullYear();
+                const month = date.getMonth() + 1;
+                const day = date.getDate();
+
+                releaseDate = `${month}/${day}/${year}`;
+            }
+
+            if (url) {
+                name = `<a href="${url}" target="_blank">${name}</a>`;
+            }
+
+            return {
+                id,
+                coverImage,
+                name,
+                summary,
+                releaseDate,
+                first_release_date,
+                genre: genres[0]?.name || null,
+                rating: rating.toFixed(1),
+                aggregatedRating: aggregated_rating.toFixed(1),
+                platforms: platforms.map(p => p.abbreviation).join(', ') || null
+            }
         });
     }
 
