@@ -4,29 +4,13 @@
  */
 
 define(['N/search'], function (search) {
-    function create(options) {
-        return search.create(options);
-    }
-
-    function lookupFields(options) {
-        return search.lookupFields(options);
-    }
-
-    function load(options) {
-        return search.load(options);
-    }
-
-    function get(options) {
-        return create(options).run().getRange({ start: 0, end: 1000 });
-    }
-
     function getAll(options) {
-        const searchResult = create(options).run();
+        const searchResult = search.create(options).run();
         return getAllResults(searchResult);
     }
 
     function getOne(options) {
-        return create(options).run().getRange({ start: 0, end: 1 });
+        return search.create(options).run().getRange({ start: 0, end: 1 });
     }
 
     function hasAny(options) {
@@ -52,14 +36,9 @@ define(['N/search'], function (search) {
     }
 
     return {
-        create,
-        lookupFields,
-        load,
-        get,
+        ...search,
         getAll,
         getOne,
         hasAny,
-        getAllResults,
-        Type: search.Type
     };
 });
