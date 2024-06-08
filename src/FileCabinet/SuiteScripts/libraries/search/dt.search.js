@@ -4,41 +4,40 @@
  */
 
 define(['N/search'], function (search) {
-    function getAll(options) {
-        const searchResult = search.create(options).run();
-        return getAllResults(searchResult);
-    }
-
     function getOne(options) {
-        return search.create(options).run().getRange({ start: 0, end: 1 });
+        const results = search.create(options)
+            .run()
+            .getRange({ start: 0, end: 1 });
+
+        return results.length > 0 ? results[0] : null;
     }
 
     function hasAny(options) {
-        return getOne(options).length > 0;
+        return search.create(options)
+            .run()
+            .getRange({ start: 0, end: 1 })
+            .length > 0;
     }
 
-    function getAllResults(resultSet) {
-        let batch, batchResults, results = [], searchStart = 0;
-        if (!resultSet.getRange) {
-            resultSet = resultSet.run();
-        }
+    function getAll(options) {
+        let results = [];
 
-        do {
-            batch = resultSet.getRange({ start: searchStart, end: searchStart + 1000} );
-            batchResults = (batch || []).map(function (row) {
-                searchStart++;
-                return row;
-            }, this);
-            results = results.concat(batchResults);
-        } while ((batchResults || []).length === 1000);
+        const pageData = search.create(options)
+            .runPaged({ pageSize: 1000 });
+
+        pageData.pageRanges
+            .forEach(function(pageRange) {
+                const page = pageData.fetch({ index: pageRange.index });
+                results = results.concat(page.data);
+            });
 
         return results;
     }
 
     return {
         ...search,
-        getAll,
         getOne,
         hasAny,
+        getAll,
     };
 });

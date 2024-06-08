@@ -12,7 +12,7 @@ define([
     '../libraries/dt.random'
 ], function (cache, log, query, record, moment, random) {
     function getInputData(context) {
-        const periods = [{ id: 327, startDate: '2/1/2020', endDate: '12/31/2020' }];
+        const periods = [{ id: 327, startDate: '1/1/2022', endDate: '5/28/2024' }];
 
         return periods;
     }
@@ -37,12 +37,14 @@ define([
         const timestamp = JSON.parse(context.values[0]);
         const orderDate = moment.unix(timestamp);
 
-        const customerIds = random.getRandomCustomerIds(10);
+        const yearIncrease = getYearIncrease(orderDate);
+
+        const customerIds = random.getRandomCustomerIds(10 + yearIncrease);
 
         log.audit({ title: 'Creating Orders', details: `Creating ${customerIds.length} orders for ${orderDate.format('YYYY-MM-DD')}` });
 
         customerIds.forEach((customerId) => {
-            const itemIds = random.getRandomItemIdsForOrder(15);
+            const itemIds = random.getRandomItemIdsForOrder(15 + yearIncrease);
 
             const orderId = createOrder(orderDate, customerId, itemIds);
 
@@ -78,7 +80,8 @@ define([
 
         itemIds.forEach((item, index) => {
             const NOT_TAXABLE = -7;
-            const quantity = random.getRandomNumberBetween(5, 25);
+            const yearIncrease = getYearIncrease(date);
+            const quantity = random.getRandomNumberBetween(5, 25 + yearIncrease);
 
             order.setSublistValue({
                 sublistId: 'item',
@@ -134,6 +137,13 @@ define([
             fieldId: 'paymentmethod',
             value: CHECK
         }).save();
+    }
+
+    function getYearIncrease(orderDate) {
+        const year = moment(orderDate).year();
+        const increase = year - 2020;
+
+        return increase * 3;
     }
 
     return {
