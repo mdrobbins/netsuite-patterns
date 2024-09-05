@@ -2,7 +2,7 @@
  * @NApiVersion 2.1
  * @NModuleScope Public
  */
-define(['N/https', 'N/log', 'N/runtime'], function (https, log, runtime) {
+define(['N/https'], function (https) {
     function searchGames(searchTerm) {
         if (!searchTerm) {
             return;
@@ -19,10 +19,6 @@ define(['N/https', 'N/log', 'N/runtime'], function (https, log, runtime) {
     }
 
     function getGameGenres() {
-        if (!gameId) {
-            return;
-        }
-
         const query = `
             fields id,name,url;
             limit 500;
@@ -32,9 +28,7 @@ define(['N/https', 'N/log', 'N/runtime'], function (https, log, runtime) {
     }
 
     function makeRequest(endpoint, body) {
-        const script = runtime.getCurrentScript();
-
-        const clientId = script.getParameter({ name: 'custscript_dt_igdb_client_id' });
+        const clientId = https.createSecureString({ input: '\{custsecret_dt_igdb_client_id\}' });
 
         const token = getToken();
 
