@@ -13,6 +13,7 @@ define([], function() {
 
         this.getElapsedTime = function() {
             const CURRENT_TIME = new Date();
+            
             return CURRENT_TIME.getTime() - START_TIME.getTime();
         };
 
@@ -23,7 +24,9 @@ define([], function() {
         this.getIntervalTime = function() {
             const CURRENT_TIME = new Date();
             const intervalTime = CURRENT_TIME.getTime() - START_INTERVAL_TIME.getTime();
-            START_INTERVAL_TIME = intervalTime;
+            
+            START_INTERVAL_TIME = CURRENT_TIME;
+            
             return intervalTime;
         };
 
@@ -32,7 +35,5 @@ define([], function() {
         };
     }
 
-    return {
-        Timer: Timer
-    };
+    return Timer;
 });
