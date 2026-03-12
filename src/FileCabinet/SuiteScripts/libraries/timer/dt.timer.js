@@ -1,38 +1,41 @@
 /**
  * @NApiVersion 2.1
  * @NModuleScope Public
+ * 
+ * @Governance 0
  */
 define([], function() {
-    function Timer() {
-        let START_TIME = new Date();
-        let START_INTERVAL_TIME = START_TIME;
+    class Timer {
+        constructor() {
+            this.startTime = new Date();
+            this.startIntervalTime = this.startTime;
+        }
 
-        this.getStartTime = function() {
-            return START_TIME;
-        };
+        getStartTime() {
+            return this.startTime;
+        }
 
-        this.getElapsedTime = function() {
-            const CURRENT_TIME = new Date();
-            
-            return CURRENT_TIME.getTime() - START_TIME.getTime();
-        };
+        getElapsedTime() {
+            const currentTime = new Date();
+            return currentTime.getTime() - this.startTime.getTime();
+        }
 
-        this.getElapsedSeconds = function() {
+        getElapsedSeconds() {
             return this.getElapsedTime() / 1000;
-        };
+        }
 
-        this.getIntervalTime = function() {
-            const CURRENT_TIME = new Date();
-            const intervalTime = CURRENT_TIME.getTime() - START_INTERVAL_TIME.getTime();
-            
-            START_INTERVAL_TIME = CURRENT_TIME;
-            
+        getIntervalTime() {
+            const currentTime = new Date();
+            const intervalTime = currentTime.getTime() - this.startIntervalTime.getTime();
+
+            this.startIntervalTime = currentTime;
+
             return intervalTime;
-        };
+        }
 
-        this.getIntervalSeconds = function() {
+        getIntervalSeconds() {
             return this.getIntervalTime() / 1000;
-        };
+        }
     }
 
     return Timer;
